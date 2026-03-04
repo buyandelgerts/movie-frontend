@@ -1,14 +1,17 @@
 import { ChevronRight, Heart, MapPin, Play, Share2, Star } from "lucide-react";
-import { CAST, MOCK_MOVIES } from "../mock/data";
+import type { Movie } from "../interfaces/Movie";
+// import { CAST, MOCK_MOVIES } from "../mock/data";
 
 const DetailsPage = ({
+  movies,
   onBack,
   onCinemaClick,
 }: {
+  movies: Movie[];
   onBack: () => void;
   onCinemaClick: () => void;
 }) => {
-  const movie = MOCK_MOVIES[0];
+  const movie = movies[0];
 
   return (
     <div className="min-h-screen pt-16 animate-fade-in">
@@ -26,7 +29,7 @@ const DetailsPage = ({
       {/* Hero/Player */}
       <div className="relative w-full aspect-[21/9] md:aspect-[2.4/1] bg-black group">
         <img
-          src={movie.backdrop}
+          src={movie.backdrop_path}
           className="w-full h-full object-cover opacity-60"
           alt="Backdrop"
         />
@@ -90,14 +93,14 @@ const DetailsPage = ({
                 </button>
               </div>
               <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide">
-                {CAST.map((person, i) => (
+                {movie.credits.map((person, i) => (
                   <div
                     key={i}
                     className="flex flex-col items-center min-w-[100px]"
                   >
                     <div className="w-20 h-20 rounded-full overflow-hidden mb-3 border-2 border-transparent hover:border-red-500 transition-colors">
                       <img
-                        src={person.img}
+                        src={person.profile_path}
                         alt={person.name}
                         className="w-full h-full object-cover"
                       />
@@ -106,7 +109,7 @@ const DetailsPage = ({
                       {person.name}
                     </div>
                     <div className="text-gray-500 text-xs text-center mt-1">
-                      {person.role}
+                      {person.type}
                     </div>
                   </div>
                 ))}

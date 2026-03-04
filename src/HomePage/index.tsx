@@ -6,22 +6,29 @@ import {
   ChevronRight,
   ChevronLeft,
 } from "lucide-react";
-import { MOCK_MOVIES } from "../mock/data";
+// import { MOCK_MOVIES } from "../mock/data";
+import type { Movie } from "../interfaces/Movie";
 
-const HomePage = ({ onNavigate }: { onNavigate: (id: number) => void }) => {
-  const heroMovie = MOCK_MOVIES[0];
-
+const HomePage = ({
+  movies,
+  onNavigate,
+}: {
+  movies: Movie[];
+  onNavigate: (id: number) => void;
+}) => {
+  // const heroMovie = movies[0];
+  // console.log("Hero Movie: ", heroMovie);
   return (
     <div className="pb-20">
       {/* Hero Section */}
       <div className="relative w-full h-[85vh] md:h-[75vh]">
         <div className="absolute inset-0 bg-gradient-to-r from-[#120a0a] via-[#120a0a]/40 to-transparent z-10" />
         <div className="absolute inset-0 bg-gradient-to-t from-[#120a0a] via-[#120a0a]/60 to-transparent z-10" />
-        <img
-          src={heroMovie.backdrop}
+        {/* <img
+          src={heroMovie.backdrop_path}
           alt={heroMovie.title}
           className="w-full h-full object-cover object-top"
-        />
+        /> */}
 
         <div className="absolute bottom-0 left-0 p-8 md:p-16 z-20 max-w-2xl animate-fade-in-up">
           <div className="inline-flex items-center gap-2 bg-red-600/90 text-white text-xs font-bold px-2 py-1 rounded mb-4">
@@ -39,7 +46,7 @@ const HomePage = ({ onNavigate }: { onNavigate: (id: number) => void }) => {
             <span className="text-gray-300">2h 46m</span>
           </div>
           <h1 className="text-5xl md:text-7xl font-bold text-white mb-4 leading-tight">
-            {heroMovie.title}
+            {/* {heroMovie.title} */}
           </h1>
           <p className="text-gray-300 text-sm md:text-base line-clamp-3 mb-8 max-w-lg">
             Paul Atreides unites with Chani and the Fremen while on a warpath of
@@ -49,13 +56,13 @@ const HomePage = ({ onNavigate }: { onNavigate: (id: number) => void }) => {
 
           <div className="flex items-center gap-4">
             <button
-              onClick={() => onNavigate(heroMovie.id)}
+              // onClick={() => onNavigate(heroMovie.tmdb_id)}
               className="bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-lg font-semibold flex items-center gap-2 transition-all shadow-lg shadow-red-900/40"
             >
               <Play size={20} fill="currentColor" /> Watch Trailer
             </button>
             <button
-              onClick={() => onNavigate(heroMovie.id)}
+              // onClick={() => onNavigate(heroMovie.tmdb_id)}
               className="bg-white/10 hover:bg-white/20 backdrop-blur text-white px-8 py-3 rounded-lg font-semibold flex items-center gap-2 transition-all border border-white/10"
             >
               <Info size={20} /> More Info
@@ -70,7 +77,6 @@ const HomePage = ({ onNavigate }: { onNavigate: (id: number) => void }) => {
           <div className="w-4 h-1 bg-gray-600 rounded-full"></div>
         </div>
       </div>
-
       <div className="container mx-auto px-6 -mt-10 relative z-30">
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Main Column */}
@@ -98,34 +104,35 @@ const HomePage = ({ onNavigate }: { onNavigate: (id: number) => void }) => {
               </div>
 
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                {MOCK_MOVIES.filter((m) => m.type === "series").map(
-                  (series) => (
+                {movies
+                  .filter((m) => m.type === "NOW_PLAYING")
+                  .map((series) => (
                     <div
-                      key={series.id}
+                      key={series.tmdb_id}
                       className="group relative aspect-[2/3] rounded-lg overflow-hidden cursor-pointer shadow-lg shadow-black/50"
                     >
                       <img
-                        src={`https://image.tmdb.org/t/p/w500${
-                          series.image.split("w500")[1]
-                        }`}
+                        src={
+                          `https://image.tmdb.org/t/p/w500${series.poster_path}` +
+                          ".jpg"
+                        }
                         alt={series.title}
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-100" />
                       <div className="absolute top-2 right-2 bg-yellow-500 text-black text-[10px] font-bold px-1.5 py-0.5 rounded">
-                        ★ {series.rating}
+                        ★ {series.vote_average}
                       </div>
                       <div className="absolute bottom-0 left-0 p-3 w-full">
                         <h3 className="text-white font-bold text-sm truncate">
                           {series.title}
                         </h3>
                         <p className="text-gray-400 text-xs truncate mt-0.5">
-                          {series.status}
+                          {series.type}
                         </p>
                       </div>
                     </div>
-                  )
-                )}
+                  ))}
                 {/* Filler for UI */}
                 <div className="group relative aspect-[2/3] rounded-lg overflow-hidden cursor-pointer bg-[#1f1616] flex items-center justify-center border border-white/5">
                   <span className="text-gray-500 text-sm">More Series</span>
@@ -147,16 +154,20 @@ const HomePage = ({ onNavigate }: { onNavigate: (id: number) => void }) => {
                 </button>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {MOCK_MOVIES.filter((m) => m.type === "movie" && m.id !== 1)
-                  .slice(0, 4)
+                {movies
+                  .filter((m) => m.type === "POPULAR" && m.tmdb_id !== 1)
+                  // .slice(0, 4)
                   .map((movie) => (
                     <div
-                      key={movie.id}
-                      onClick={() => onNavigate(movie.id)}
+                      key={movie.tmdb_id}
+                      onClick={() => onNavigate(movie.tmdb_id)}
                       className="group relative aspect-video rounded-xl overflow-hidden cursor-pointer"
                     >
                       <img
-                        src={movie.backdrop}
+                        src={
+                          `https://image.tmdb.org/t/p/w500${movie.backdrop_path}` +
+                          ".jpg"
+                        }
                         alt={movie.title}
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                       />
@@ -170,7 +181,7 @@ const HomePage = ({ onNavigate }: { onNavigate: (id: number) => void }) => {
                             PG-13
                           </span>
                           <span className="text-gray-400 text-xs">
-                            {movie.genre.join("/")}
+                            {movie.genres}
                           </span>
                         </div>
                       </div>
@@ -187,51 +198,35 @@ const HomePage = ({ onNavigate }: { onNavigate: (id: number) => void }) => {
                 </h2>
               </div>
               <div className="space-y-4">
-                {[
-                  {
-                    title: "The Godfather",
-                    year: "1972",
-                    genre: "Crime, Drama",
-                    rating: 9.2,
-                    img: "https://image.tmdb.org/t/p/w200/3bhkrj58Vtu7enYsRolD1fZdja1.jpg",
-                  },
-                  {
-                    title: "The Shawshank Redemption",
-                    year: "1994",
-                    genre: "Drama",
-                    rating: 9.3,
-                    img: "https://image.tmdb.org/t/p/w200/lyQBXzOQKo0bOmTMuXlBbUY51G3.jpg",
-                  },
-                  {
-                    title: "The Dark Knight",
-                    year: "2008",
-                    genre: "Action, Crime",
-                    rating: 9.0,
-                    img: "https://image.tmdb.org/t/p/w200/qJ2tW6WMUDux911r6m7haRef0WH.jpg",
-                  },
-                ].map((classic, i) => (
-                  <div
-                    key={i}
-                    className="flex items-center gap-4 bg-[#1a1111] p-3 rounded-lg hover:bg-[#251818] transition-colors cursor-pointer group"
-                  >
-                    <img
-                      src={classic.img}
-                      alt={classic.title}
-                      className="w-12 h-16 object-cover rounded"
-                    />
-                    <div className="flex-1">
-                      <h4 className="text-white font-bold group-hover:text-red-500 transition-colors">
-                        {classic.title}
-                      </h4>
-                      <p className="text-gray-500 text-xs">
-                        {classic.year} • {classic.genre}
-                      </p>
+                {movies
+                  .filter((m) => m.type === "TOP_RATED" && m.tmdb_id !== 1)
+                  .map((classic, i) => (
+                    <div
+                      key={i}
+                      className="flex items-center gap-4 bg-[#1a1111] p-3 rounded-lg hover:bg-[#251818] transition-colors cursor-pointer group"
+                    >
+                      <img
+                        src={
+                          `https://image.tmdb.org/t/p/w500${classic.backdrop_path}` +
+                          ".jpg"
+                        }
+                        alt={classic.title}
+                        className="w-12 h-16 object-cover rounded"
+                      />
+                      <div className="flex-1">
+                        <h4 className="text-white font-bold group-hover:text-red-500 transition-colors">
+                          {classic.title}
+                        </h4>
+                        <p className="text-gray-500 text-xs">
+                          {classic.release_date} • {classic.genres}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-1 text-yellow-500 text-sm font-bold pr-4">
+                        <Star size={14} fill="currentColor" />{" "}
+                        {classic.popularity}
+                      </div>
                     </div>
-                    <div className="flex items-center gap-1 text-yellow-500 text-sm font-bold pr-4">
-                      <Star size={14} fill="currentColor" /> {classic.rating}
-                    </div>
-                  </div>
-                ))}
+                  ))}
               </div>
             </div>
           </div>
@@ -300,7 +295,6 @@ const HomePage = ({ onNavigate }: { onNavigate: (id: number) => void }) => {
           </div>
         </div>
       </div>
-
       {/* Footer Mock */}
       <footer className="mt-12 py-10 border-t border-white/5 bg-[#0d0707] text-center">
         <div className="flex items-center justify-center gap-2 mb-4">

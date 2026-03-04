@@ -1,6 +1,4 @@
-import type { Credit } from "./Credit";
-import type { SimilarMovie } from "./SimilarMovie";
-export interface Movie {
+export interface SimilarMovie {
   tmdb_id: number;
   title: string;
   overview: string;
@@ -13,6 +11,4 @@ export interface Movie {
   teaser_path: string;
   type: string;
   genres: string;
-  credits: Credit[];
-  similar_movies: SimilarMovie[];
 }

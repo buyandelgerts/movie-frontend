@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { MOCK_MOVIES, THEATERS } from "../mock/data";
+import { THEATERS } from "../mock/data";
 import { Calendar, ChevronRight, Film, MapPin, Share2 } from "lucide-react";
+import type { Movie } from "../interfaces/Movie";
 
-const CinemasPage = () => {
+const CinemasPage = ({ movies }: { movies: Movie[] }) => {
   const [selectedTheater, setSelectedTheater] = useState<number>(1);
   const activeTheater =
     THEATERS.find((t) => t.id === selectedTheater) || THEATERS[0];
@@ -15,7 +16,7 @@ const CinemasPage = () => {
         <div className="p-4 border-b border-white/5">
           <div className="flex items-center gap-4 mb-4">
             <img
-              src={MOCK_MOVIES[0].image}
+              src={movies[0].poster_path}
               alt="Poster"
               className="w-10 h-14 rounded object-cover border border-white/10"
             />
