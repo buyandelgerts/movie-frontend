@@ -3,7 +3,7 @@ import { THEATERS } from "../mock/data";
 import { Calendar, ChevronRight, Film, MapPin, Share2 } from "lucide-react";
 import type { Movie } from "../interfaces/Movie";
 
-const CinemasPage = ({ movies }: { movies: Movie[] }) => {
+const CinemasPage = ({ movie }: { movie: Movie }) => {
   const [selectedTheater, setSelectedTheater] = useState<number>(1);
   const activeTheater =
     THEATERS.find((t) => t.id === selectedTheater) || THEATERS[0];
@@ -16,7 +16,7 @@ const CinemasPage = ({ movies }: { movies: Movie[] }) => {
         <div className="p-4 border-b border-white/5">
           <div className="flex items-center gap-4 mb-4">
             <img
-              src={movies[0].poster_path}
+              src={`https://image.tmdb.org/t/p/w500/${movie.poster_path}.jpg`}
               alt="Poster"
               className="w-10 h-14 rounded object-cover border border-white/10"
             />
@@ -25,10 +25,10 @@ const CinemasPage = ({ movies }: { movies: Movie[] }) => {
                 NOW SHOWING
               </div>
               <h2 className="text-white font-bold text-lg leading-tight">
-                Dune: Part Two
+                {movie.title}
               </h2>
               <div className="text-gray-400 text-xs">
-                PG-13 • 2h 46m • Sci-Fi
+                PG-13 • {movie.release_date} • {movie.genres}
               </div>
             </div>
           </div>
@@ -129,9 +129,9 @@ const CinemasPage = ({ movies }: { movies: Movie[] }) => {
           className="absolute inset-0"
           style={{
             backgroundImage: `
-                        linear-gradient(#222 1px, transparent 1px),
-                        linear-gradient(90deg, #222 1px, transparent 1px)
-                    `,
+                      linear-gradient(#222 1px, transparent 1px),
+                      linear-gradient(90deg, #222 1px, transparent 1px)
+                  `,
             backgroundSize: "80px 80px",
             backgroundColor: "#0c0c0c",
           }}
@@ -146,7 +146,7 @@ const CinemasPage = ({ movies }: { movies: Movie[] }) => {
         {/* Controls Overlay */}
         <div className="absolute top-4 right-4 flex flex-col gap-2">
           <button
-            title="map-pin"
+            title="mapPin"
             className="w-10 h-10 bg-[#1f1616] rounded-lg border border-white/10 flex items-center justify-center text-white hover:bg-[#2a1d1d] shadow-lg"
           >
             <MapPin size={20} />

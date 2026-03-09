@@ -9,17 +9,20 @@ import {
   getStoredToken,
   clearToken,
 } from "./services/authService";
+import LoaderPage from "./Loader";
 
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState("home");
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [movies, setMovies] = useState<any[]>([]);
+  const [selectedMovie, setSelectedMovie] = useState<any>(null);
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
 
   useEffect(() => {
     const fetchMovies = async () => {
       setIsLoading(true);
+      console.log("Fetching movies from API...");
       let token = getStoredToken();
       if (!token) token = await getAccessToken(apiUrl);
       try {
@@ -44,6 +47,7 @@ const App: React.FC = () => {
         }
         if (!response.ok) throw new Error("Failed to fetch movies");
         const data = await response.json();
+        console.log("Fetched movies:", data.length);
         setMovies(data);
       } catch (err: any) {
         clearToken();
@@ -56,17 +60,19 @@ const App: React.FC = () => {
     fetchMovies();
   }, []);
 
-  const handleNavigateMovie = (id: number) => {
+  const handleNavigateMovie = (_id: number) => {
+    setSelectedMovie(movies.find((movie) => movie.tmdb_id === _id));
     window.scrollTo({ top: 0, behavior: "smooth" });
     setActiveTab("details");
   };
 
   const renderContent = () => {
     if (isLoading) {
-      <div className="min-h-screen bg-[#0f0a0a] flex items-center justify-center text-red-500 font-bold">
-        Loading fresh data from ETL pipeline...
-      </div>;
-    } else if (error) {
+      <LoaderPage message={"Loading fresh data from ETL pipeline..."} />;
+      return;
+    }
+
+    if (error) {
       return (
         <div className="min-h-screen bg-[#0f0a0a] flex items-center justify-center text-white">
           Error loading data: {error}
@@ -80,13 +86,13 @@ const App: React.FC = () => {
       case "details":
         return (
           <DetailsPage
-            movies={movies}
+            movie={selectedMovie}
             onBack={() => setActiveTab("home")}
             onCinemaClick={() => setActiveTab("cinemas")}
           />
         );
       case "cinemas":
-        return <CinemasPage movies={movies} />;
+        return <CinemasPage movie={selectedMovie} />;
       default:
         return <HomePage movies={movies} onNavigate={handleNavigateMovie} />;
     }

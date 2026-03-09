@@ -1,17 +1,53 @@
-import { ChevronRight, Heart, MapPin, Play, Share2, Star } from "lucide-react";
+import {
+  ChevronRight,
+  Heart,
+  MapPin,
+  Play,
+  Share2,
+  Star,
+  X,
+} from "lucide-react";
+import PaginatedGrid from "../PaginatedGrid";
+import { useEffect, useState } from "react";
 import type { Movie } from "../interfaces/Movie";
-// import { CAST, MOCK_MOVIES } from "../mock/data";
+import LoaderPage from "../Loader";
 
 const DetailsPage = ({
-  movies,
+  movie,
   onBack,
   onCinemaClick,
 }: {
-  movies: Movie[];
+  movie: Movie;
   onBack: () => void;
   onCinemaClick: () => void;
 }) => {
-  const movie = movies[0];
+  const trailerId = movie.teaser_path;
+  const [isLoading, setIsLoading] = useState(true);
+  const [isPlayingTrailer, setIsPlayingTrailer] = useState(false);
+  const [castPage, setCastPage] = useState(0);
+  const castItemsPerPage = 4;
+  const totalCastPages = Math.ceil(movie.credits.length / castItemsPerPage);
+  const imgURL = import.meta.env.VITE_API_BASE_IMG_URL;
+
+  useEffect(() => {
+    setIsLoading(true);
+    const timer = setTimeout(() => setIsLoading(false), 800);
+    return () => clearTimeout(timer);
+  }, [movie]);
+
+  useEffect(() => {
+    if (isPlayingTrailer) return;
+
+    const interval = setInterval(() => {
+      setCastPage((prev) => (prev + 1) % totalCastPages);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [totalCastPages, isPlayingTrailer]);
+
+  if (isLoading) {
+    <LoaderPage message="Loading movie details..." />;
+    return;
+  }
 
   return (
     <div className="min-h-screen pt-16 animate-fade-in">
@@ -26,23 +62,50 @@ const DetailsPage = ({
         <span className="text-white font-medium">{movie.title}</span>
       </div>
 
-      {/* Hero/Player */}
-      <div className="relative w-full aspect-[21/9] md:aspect-[2.4/1] bg-black group">
-        <img
-          src={movie.backdrop_path}
-          className="w-full h-full object-cover opacity-60"
-          alt="Backdrop"
-        />
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="w-20 h-20 bg-red-600 rounded-full flex items-center justify-center shadow-[0_0_40px_rgba(220,38,38,0.5)] cursor-pointer hover:scale-110 transition-transform z-20">
-            <Play size={32} fill="white" className="text-white ml-1" />
-          </div>
-        </div>
+      {/* Hero/Player - Youtube Trailer Banner */}
+      <div className="relative w-full aspect-[21/9] md:aspect-[2.4/1] bg-black group overflow-hidden">
+        {!isPlayingTrailer ? (
+          <>
+            <img
+              src={imgURL + movie.backdrop_path}
+              alt={movie.title}
+              className="w-full h-full object-cover opacity-60"
+            />
+            <div className="absolute inset-0 bg-black/30 z-10" />
+            <div className="absolute inset-0 flex items-center justify-center z-20">
+              <div
+                onClick={() => setIsPlayingTrailer(true)}
+                className="w-20 h-20 bg-red-600/80 rounded-full flex items-center justify-center shadow-[0_0_40px_rgba(220,38,38,0.5)] cursor-pointer hover:scale-110 transition-transform backdrop-blur"
+              >
+                <Play size={32} fill="white" className="text-white ml-1" />
+              </div>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="absolute inset-0 z-10 bg-black">
+              <iframe
+                src={`https://www.youtube.com/embed/${trailerId}?autoplay=1&mute=0&controls=1&rel=0`}
+                title="YouTube Trailer"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                className="w-full h-full border-none"
+              ></iframe>
+            </div>
+            <button
+              title="x"
+              onClick={() => setIsPlayingTrailer(false)}
+              className="absolute top-4 right-4 z-30 bg-black/60 hover:bg-black/80 text-white p-2 rounded-full transition-colors backdrop-blur"
+            >
+              <X size={24} />
+            </button>
+          </>
+        )}
         {/* Bottom Gradient */}
-        <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-[#120a0a] to-transparent" />
+        <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-[#120a0a] to-transparent z-20 pointer-events-none" />
       </div>
 
-      <div className="container mx-auto px-6 -mt-12 relative z-10 pb-20">
+      <div className="container mx-auto px-6 -mt-12 relative z-30 pb-20">
         <div className="flex flex-col lg:flex-row gap-10">
           {/* Left Column */}
           <div className="flex-1">
@@ -51,10 +114,10 @@ const DetailsPage = ({
                 NOW SHOWING
               </div>
               <div className="flex items-center gap-1 text-yellow-500 text-sm font-bold">
-                <Star size={14} fill="currentColor" /> 8.9{" "}
+                <Star size={14} fill="currentColor" /> {movie.vote_average}
                 <span className="text-gray-500 font-normal">/ 10</span>
               </div>
-              <div className="text-gray-400 text-sm">• 250k Votes</div>
+              <div className="text-gray-400 text-sm">• {movie.vote_count}</div>
             </div>
 
             <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
@@ -77,11 +140,9 @@ const DetailsPage = ({
             </div>
 
             <div className="mb-10">
-              <h3 className="text-xl font-bold text-white mb-3">Synopsis</h3>
+              <h3 className="text-xl font-bold text-white mb-3">Overview</h3>
               <p className="text-gray-300 leading-relaxed text-lg">
-                {movie.title === "Dune: Part Two"
-                  ? "Paul Atreides unites with Chani and the Fremen while on a warpath of revenge against the conspirators who destroyed his family. Facing a choice between the love of his life and the fate of the known universe, he endeavors to prevent a terrible future only he can foresee."
-                  : "Movie description goes here."}
+                {movie.overview}
               </p>
             </div>
 
@@ -92,71 +153,90 @@ const DetailsPage = ({
                   View All <ChevronRight size={14} />
                 </button>
               </div>
-              <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide">
-                {movie.credits.map((person, i) => (
-                  <div
+
+              {/* Cast Carousel with Pager */}
+              <div className="overflow-hidden relative w-full">
+                <div
+                  className="flex transition-transform duration-700 ease-in-out"
+                  style={{ transform: `translateX(-${castPage * 100}%)` }}
+                >
+                  {Array.from({ length: totalCastPages }).map((_, pageIdx) => (
+                    <div
+                      key={pageIdx}
+                      className="w-full flex-shrink-0 flex justify-between sm:justify-around px-2 gap-4"
+                    >
+                      {movie.credits
+                        .slice(
+                          pageIdx * castItemsPerPage,
+                          (pageIdx + 1) * castItemsPerPage
+                        )
+                        .map((person, i) => (
+                          <div
+                            key={i}
+                            className="flex flex-col items-center flex-1 max-w-[120px]"
+                          >
+                            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full overflow-hidden mb-3 border-2 border-transparent hover:border-red-500 transition-colors">
+                              <img
+                                src={imgURL + person.profile_path}
+                                alt={person.name}
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                            <div className="text-white font-medium text-xs sm:text-sm text-center leading-tight line-clamp-2">
+                              {person.name}
+                            </div>
+                            <div className="text-gray-500 text-[10px] sm:text-xs text-center mt-1 line-clamp-1">
+                              {person.type}
+                            </div>
+                          </div>
+                        ))}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Cast Pager Dots */}
+              <div className="flex justify-center gap-2 mt-6">
+                {Array.from({ length: totalCastPages }).map((_, i) => (
+                  <button
                     key={i}
-                    className="flex flex-col items-center min-w-[100px]"
-                  >
-                    <div className="w-20 h-20 rounded-full overflow-hidden mb-3 border-2 border-transparent hover:border-red-500 transition-colors">
-                      <img
-                        src={person.profile_path}
-                        alt={person.name}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <div className="text-white font-medium text-sm text-center leading-tight">
-                      {person.name}
-                    </div>
-                    <div className="text-gray-500 text-xs text-center mt-1">
-                      {person.type}
-                    </div>
-                  </div>
+                    onClick={() => setCastPage(i)}
+                    className={`h-1.5 rounded-full transition-all duration-300 ${
+                      castPage === i
+                        ? "w-8 bg-red-600"
+                        : "w-2 bg-gray-600 hover:bg-gray-400"
+                    }`}
+                    aria-label={`Go to cast page ${i + 1}`}
+                  />
                 ))}
               </div>
             </div>
 
-            {/* Similar Movies */}
-            <div>
-              <h3 className="text-xl font-bold text-white mb-6">
-                Similar Movies
-              </h3>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                {[
-                  {
-                    t: "Blade Runner 2049",
-                    i: "https://image.tmdb.org/t/p/w300/g84l2202J5Uwd8c3b9b0c5b3b0c.jpg",
-                  },
-                  {
-                    t: "Arrival",
-                    i: "https://image.tmdb.org/t/p/w300/pEFRzXtLmxYNjGd0XqJDHpGv1dG.jpg",
-                  },
-                  {
-                    t: "Interstellar",
-                    i: "https://image.tmdb.org/t/p/w300/gEU2QniL6C8z1d9u8c3b9b0c5b3.jpg",
-                  },
-                  {
-                    t: "Avatar",
-                    i: "https://image.tmdb.org/t/p/w300/kyeqWdyUXW608qlYkRqosgbbJyK.jpg",
-                  },
-                ].map((m, i) => (
+            {/* Similar Movies with Pagination */}
+            <div className="mb-10">
+              <PaginatedGrid
+                title="Similar Movies"
+                items={movie.similar_movies}
+                itemsPerPage={4}
+                gridClass="grid-cols-2 sm:grid-cols-4"
+                renderItem={(m: any) => (
                   <div
-                    key={i}
-                    className="aspect-[2/3] rounded-lg overflow-hidden relative group cursor-pointer"
+                    key={m.id}
+                    className="aspect-[2/3] rounded-lg overflow-hidden relative group cursor-pointer shadow-lg shadow-black/50"
                   >
                     <img
-                      src={m.i}
+                      src={imgURL + m.poster_path}
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                      alt={m.t}
+                      alt={m.title}
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end p-3">
-                      <span className="text-white font-bold text-sm">
-                        {m.t}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-3">
+                      <span className="text-white font-bold text-sm drop-shadow-md">
+                        {m.title}
                       </span>
                     </div>
                   </div>
-                ))}
-              </div>
+                )}
+              />
             </div>
           </div>
 
