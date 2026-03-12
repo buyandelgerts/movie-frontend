@@ -125,6 +125,7 @@ const HomePage = ({
           <div className="flex-1 overflow-hidden">
             {/* TV Series Section with Pager */}
             <PaginatedGrid
+              key={nowPlayingList.length + "nowplaying"}
               title="Now Playing Movies"
               items={nowPlayingList}
               itemsPerPage={4}
@@ -158,6 +159,7 @@ const HomePage = ({
 
             {/* Popular Movies Section with Pager */}
             <PaginatedGrid
+              key={popularList.length + "popular"}
               title="Popular Movies"
               // actionBtn="VIEW ALL"
               items={popularList}
@@ -191,6 +193,7 @@ const HomePage = ({
 
             {/* Classics List with Pager */}
             <PaginatedGrid
+              key={topRatedList.length + "toprated"}
               title="Top Rated Classics"
               items={topRatedList}
               itemsPerPage={5}

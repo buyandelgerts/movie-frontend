@@ -48,7 +48,6 @@ const App: React.FC = () => {
         }
         if (!response.ok) throw new Error("Failed to fetch movies");
         const data = await response.json();
-        console.log("Fetched movies:", data.length);
         if (data.length === 0) throw new Error("No movies found");
         setMovies(data);
       } catch (err: any) {

@@ -17,8 +17,8 @@ export const getStoredToken = (): string | null => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        username: 'user5',
-        password: 'test123',
+        username: import.meta.env.VITE_API_BASE_USERNAME,
+        password: import.meta.env.VITE_API_BASE_PASSWORD,
       }),
       // credentials: 'include',
     });

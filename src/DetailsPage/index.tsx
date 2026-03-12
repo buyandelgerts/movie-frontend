@@ -26,13 +26,13 @@ const DetailsPage = ({
   const [isLoading, setIsLoading] = useState(true);
   const [isPlayingTrailer, setIsPlayingTrailer] = useState(false);
   const [castPage, setCastPage] = useState(0);
-  const castItemsPerPage = 4;
+  const castItemsPerPage = 5;
   const totalCastPages = Math.ceil(movie.credits.length / castItemsPerPage);
   const imgURL = import.meta.env.VITE_API_BASE_IMG_URL;
 
   useEffect(() => {
     setIsLoading(true);
-    const timer = setTimeout(() => setIsLoading(false), 800);
+    const timer = setTimeout(() => setIsLoading(false), 500);
     return () => clearTimeout(timer);
   }, [movie]);
 
@@ -217,6 +217,7 @@ const DetailsPage = ({
             {/* Similar Movies with Pagination */}
             <div className="mb-10">
               <PaginatedGrid
+                key={movie.tmdb_id}
                 title="Similar Movies"
                 items={movie.similar_movies}
                 itemsPerPage={4}
