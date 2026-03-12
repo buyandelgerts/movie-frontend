@@ -29,9 +29,7 @@ Make sure you have:
 
 - **Node.js** 18+
 - **npm** or **yarn**
-- A backend API that provides:
-  - `GET /movies`
-  - `POST /auth/token` (or your equivalent token endpoint)
+- A running backend API
 
 ## Installation
 
@@ -66,11 +64,11 @@ Instead, the frontend requests a short-lived access token from the backend when:
 - the token is close to expiring
 - a protected API request returns `401`
 
-### Token flow
+## Token Flow
 
 1. App tries to call a protected API (`/movies`)
 2. `apiFetch()` asks `authService` for a valid token
-3. If token is missing or near expiry, `authService` calls `/auth/token`
+3. If the token is missing or near expiry, `authService` calls `/auth/token`
 4. Backend returns a fresh JWT
 5. Frontend stores the token in `localStorage`
 6. Request is sent with:
@@ -123,38 +121,16 @@ Responsible for:
 - storing movie data in component state
 - rendering loading, error, and movie list UI
 
-## Sample `authService.ts`
-
-```ts
-// Example responsibilities only:
-// - getStoredToken()
-// - saveToken()
-// - clearToken()
-// - isTokenExpiredOrNearExpiry()
-// - requestNewAccessToken()
-// - getValidAccessToken()
-```
-
-## Sample `apiFetch.ts`
-
-```ts
-// Example responsibilities only:
-// - call getValidAccessToken()
-// - add Authorization header
-// - retry once after 401
-```
-
 ## Security Notes
 
 - This project stores the access token in `localStorage` for simplicity.
 - A more secure production design is:
   - short-lived access token in memory
   - refresh token in an **HttpOnly cookie**
-- If possible, ask your backend team to support refresh-token-based auth.
 
 ## Common Issues
 
-### 1. `import.meta.env.VITE_API_BASE_URL` is undefined
+### `import.meta.env.VITE_API_BASE_URL` is undefined
 
 Make sure:
 
@@ -162,7 +138,7 @@ Make sure:
 - variable name is exactly `VITE_API_BASE_URL`
 - you restarted the Vite dev server after editing `.env`
 
-### 2. Token refresh is not working
+### Token refresh is not working
 
 Check that:
 
@@ -171,7 +147,7 @@ Check that:
 - the response field name matches your frontend code (`token` vs `accessToken`)
 - `credentials: 'include'` is set if your backend uses cookies
 
-### 3. API always returns `401`
+### API always returns `401`
 
 Possible causes:
 
@@ -181,7 +157,7 @@ Possible causes:
 - backend does not trust the token issued by `/auth/token`
 - CORS or cookie configuration is blocking refresh
 
-### 4. Multiple requests trigger multiple token refresh calls
+### Multiple requests trigger multiple token refresh calls
 
 This project avoids that by using a shared refresh promise in `authService.ts`.
 
@@ -203,12 +179,10 @@ This project avoids that by using a shared refresh promise in `authService.ts`.
 
 ## Scripts
 
-Typical Vite scripts:
-
 ```bash
-npm run dev      # start local dev server
-npm run build    # build for production
-npm run preview  # preview production build
+npm run dev
+npm run build
+npm run preview
 ```
 
 ## Troubleshooting Checklist
