@@ -3,9 +3,13 @@ import { Bell, Search } from "lucide-react";
 const Navbar = ({
   activeTab,
   setActiveTab,
+  searchQuery,
+  onSearch,
 }: {
   activeTab: string;
   setActiveTab: (tab: string) => void;
+  searchQuery: string;
+  onSearch: (query: string) => void;
 }) => {
   return (
     <nav className="fixed top-0 w-full z-50 bg-[#0a0505]/90 backdrop-blur-md border-b border-white/5 flex items-center justify-between px-6 py-3">
@@ -18,20 +22,16 @@ const Navbar = ({
             M
           </div>
           <span className="font-bold text-xl tracking-tight text-white hidden sm:block">
-            MovieDeck
+            MovieETL
           </span>
         </div>
         <div className="hidden md:flex items-center gap-6 font-medium text-sm">
-          {["Home", "Movies", "Series", "Cinemas", "News"].map((item) => (
+          {["Home", "Cinemas"].map((item) => (
             <button
               key={item}
               onClick={() =>
                 setActiveTab(
-                  item.toLowerCase() === "home"
-                    ? "home"
-                    : item.toLowerCase() === "cinemas"
-                    ? "cinemas"
-                    : "home"
+                  item.toLowerCase() === "cinemas" ? "cinemas" : "home"
                 )
               }
               className={`transition-colors ${
@@ -52,7 +52,9 @@ const Navbar = ({
           <Search size={16} />
           <input
             type="text"
-            placeholder="Search movies, actors..."
+            placeholder="Search movies"
+            value={searchQuery}
+            onChange={(e) => onSearch(e.target.value)}
             className="bg-transparent border-none outline-none text-sm text-white ml-2 w-full placeholder-gray-500"
           />
         </div>

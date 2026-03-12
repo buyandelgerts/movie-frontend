@@ -7,6 +7,7 @@ const CinemasPage = ({ movie }: { movie: Movie }) => {
   const [selectedTheater, setSelectedTheater] = useState<number>(1);
   const activeTheater =
     THEATERS.find((t) => t.id === selectedTheater) || THEATERS[0];
+  const imgURL = import.meta.env.VITE_API_BASE_IMG_URL;
 
   return (
     <div className="h-[calc(100vh-64px)] mt-16 flex flex-col md:flex-row overflow-hidden bg-[#120a0a]">
@@ -16,7 +17,7 @@ const CinemasPage = ({ movie }: { movie: Movie }) => {
         <div className="p-4 border-b border-white/5">
           <div className="flex items-center gap-4 mb-4">
             <img
-              src={`https://image.tmdb.org/t/p/w500/${movie.poster_path}.jpg`}
+              src={imgURL + movie.poster_path}
               alt="Poster"
               className="w-10 h-14 rounded object-cover border border-white/10"
             />

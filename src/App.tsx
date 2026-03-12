@@ -10,6 +10,7 @@ import {
   clearToken,
 } from "./services/authService";
 import LoaderPage from "./Loader";
+import SearchResultsPage from "./SearchResultsPage";
 
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState("home");
@@ -17,12 +18,12 @@ const App: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [movies, setMovies] = useState<any[]>([]);
   const [selectedMovie, setSelectedMovie] = useState<any>(null);
+  const [searchQuery, setSearchQuery] = useState("");
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
 
   useEffect(() => {
     const fetchMovies = async () => {
       setIsLoading(true);
-      console.log("Fetching movies from API...");
       let token = getStoredToken();
       if (!token) token = await getAccessToken(apiUrl);
       try {
@@ -48,6 +49,7 @@ const App: React.FC = () => {
         if (!response.ok) throw new Error("Failed to fetch movies");
         const data = await response.json();
         console.log("Fetched movies:", data.length);
+        if (data.length === 0) throw new Error("No movies found");
         setMovies(data);
       } catch (err: any) {
         clearToken();
@@ -56,9 +58,14 @@ const App: React.FC = () => {
         setIsLoading(false);
       }
     };
-
     fetchMovies();
   }, []);
+
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+    if (query.trim().length > 0) setActiveTab("search");
+    else setActiveTab("home");
+  };
 
   const handleNavigateMovie = (_id: number) => {
     setSelectedMovie(movies.find((movie) => movie.tmdb_id === _id));
@@ -81,6 +88,14 @@ const App: React.FC = () => {
     }
 
     switch (activeTab) {
+      case "search":
+        return (
+          <SearchResultsPage
+            query={searchQuery}
+            onMovieSelect={handleNavigateMovie}
+            movies={movies}
+          />
+        );
       case "home":
         return <HomePage movies={movies} onNavigate={handleNavigateMovie} />;
       case "details":
@@ -100,7 +115,12 @@ const App: React.FC = () => {
 
   return (
     <div className="bg-[#0f0a0a] min-h-screen font-sans text-gray-100 selection:bg-red-500/30">
-      <Navbar activeTab={activeTab} setActiveTab={setActiveTab} />
+      <Navbar
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        searchQuery={searchQuery}
+        onSearch={handleSearch}
+      />
       {renderContent()}
 
       <style>{`

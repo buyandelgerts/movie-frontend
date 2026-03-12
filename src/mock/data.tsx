@@ -1,4 +1,3 @@
-import type { Movie } from "../interfaces/Movie";
 import type { Theater } from "../interfaces/Theater";
 
 // export const MOCK_MOVIES: Movie[] = [

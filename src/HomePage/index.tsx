@@ -1,4 +1,12 @@
-import { Bell, ChevronUp, Info, Play, Star } from "lucide-react";
+import {
+  Bell,
+  Calendar,
+  ChevronDown,
+  ChevronUp,
+  Info,
+  Play,
+  Star,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import type { Movie } from "../interfaces/Movie";
 import PaginatedGrid from "../PaginatedGrid";
@@ -28,6 +36,12 @@ const HomePage = ({
   const popularList = movies.filter((m) => m.type === "POPULAR");
   const topRatedList = movies.filter((m) => m.type === "TOP_RATED");
   const nowPlayingList = movies.filter((m) => m.type === "NOW_PLAYING");
+  const [visibleComingSoon, setVisibleComingSoon] = useState(5);
+  const imgURL = import.meta.env.VITE_API_BASE_IMG_URL;
+
+  const handleLoadMore = () => {
+    setVisibleComingSoon((prev) => prev + 5);
+  };
 
   return (
     <div className="pb-20">
@@ -40,7 +54,7 @@ const HomePage = ({
         {heroMovies.map((movie, idx) => (
           <img
             key={movie.tmdb_id}
-            src={`https://image.tmdb.org/t/p/w500/${movie.poster_path}.jpg`}
+            src={imgURL + movie.poster_path}
             alt={movie.title}
             className={`absolute inset-0 w-full h-full object-cover object-top transition-opacity duration-1000 ${
               idx === heroIdx ? "opacity-100 z-0" : "opacity-0 -z-10"
@@ -118,10 +132,11 @@ const HomePage = ({
               renderItem={(nowPlaying: Movie) => (
                 <div
                   key={nowPlaying.tmdb_id}
+                  onClick={() => onNavigate(nowPlaying.tmdb_id)}
                   className="group relative aspect-[2/3] rounded-lg overflow-hidden cursor-pointer shadow-lg shadow-black/50"
                 >
                   <img
-                    src={`https://image.tmdb.org/t/p/w500${nowPlaying.poster_path}.jpg`}
+                    src={imgURL + nowPlaying.poster_path}
                     alt={nowPlaying.title}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                   />
@@ -134,7 +149,7 @@ const HomePage = ({
                       {nowPlaying.title}
                     </h3>
                     <p className="text-gray-400 text-xs truncate mt-0.5">
-                      {nowPlaying.type}
+                      {nowPlaying.genres}
                     </p>
                   </div>
                 </div>
@@ -144,9 +159,9 @@ const HomePage = ({
             {/* Popular Movies Section with Pager */}
             <PaginatedGrid
               title="Popular Movies"
-              actionBtn="VIEW ALL"
+              // actionBtn="VIEW ALL"
               items={popularList}
-              itemsPerPage={4} // Showing 2 large banner-style cards per page
+              itemsPerPage={4}
               gridClass="grid-cols-1 md:grid-cols-2"
               renderItem={(popular: Movie) => (
                 <div
@@ -155,7 +170,7 @@ const HomePage = ({
                   className="group relative aspect-video rounded-xl overflow-hidden cursor-pointer shadow-lg"
                 >
                   <img
-                    src={`https://image.tmdb.org/t/p/w500/${popular.backdrop_path}.jpg`}
+                    src={imgURL + popular.backdrop_path}
                     alt={popular.title}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
@@ -165,9 +180,6 @@ const HomePage = ({
                       {popular.title}
                     </h3>
                     <div className="flex items-center gap-2">
-                      <span className="bg-white/20 backdrop-blur px-2 py-0.5 rounded text-[10px] text-white">
-                        PG-13
-                      </span>
                       <span className="text-gray-300 text-xs drop-shadow-md">
                         {popular.genres}
                       </span>
@@ -181,15 +193,16 @@ const HomePage = ({
             <PaginatedGrid
               title="Top Rated Classics"
               items={topRatedList}
-              itemsPerPage={3}
+              itemsPerPage={5}
               gridClass="grid-cols-1"
               renderItem={(topRated: any) => (
                 <div
                   key={topRated.tmdb_id}
+                  onClick={() => onNavigate(topRated.tmdb_id)}
                   className="flex items-center gap-4 bg-[#1a1111] p-3 rounded-lg hover:bg-[#251818] transition-colors cursor-pointer group border border-transparent hover:border-white/5"
                 >
                   <img
-                    src={`https://image.tmdb.org/t/p/w500${topRated.poster_path}.jpg`}
+                    src={imgURL + topRated.poster_path}
                     alt={topRated.title}
                     className="w-12 h-16 object-cover rounded shadow-md"
                   />
@@ -218,7 +231,7 @@ const HomePage = ({
               </div>
 
               <div className="space-y-2">
-                {upcomingList.map((item) => {
+                {upcomingList.slice(0, visibleComingSoon).map((item) => {
                   const isExpanded = expandedSoonId === item.tmdb_id;
 
                   return (
@@ -237,7 +250,8 @@ const HomePage = ({
                               <h4 className="text-white font-bold group-hover:text-red-400 transition-colors">
                                 {item.title}
                               </h4>
-                              <span className="text-red-500 text-xs font-bold mt-1">
+                              <span className="text-red-500 text-xs mt-1 flex items-center gap-1">
+                                <Calendar size={12} />
                                 {item.release_date}
                               </span>
                             </div>
@@ -255,7 +269,7 @@ const HomePage = ({
                             onClick={() => onNavigate(item.tmdb_id)}
                           >
                             <img
-                              src={`https://image.tmdb.org/t/p/w500${item.poster_path}.jpg`}
+                              src={imgURL + item.poster_path}
                               alt={item.title}
                               className="w-full h-full object-cover group-hover/img:scale-105 transition-transform duration-500"
                             />
@@ -286,7 +300,8 @@ const HomePage = ({
                             <div className="text-gray-200 text-sm font-medium group-hover:text-red-400 transition-colors">
                               {item.title}
                             </div>
-                            <div className="text-gray-500 text-xs">
+                            <div className="text-gray-500 text-xs mt-1 flex items-center gap-1">
+                              <Calendar size={12} />
                               {item.release_date}
                             </div>
                           </div>
@@ -296,7 +311,7 @@ const HomePage = ({
                               e.stopPropagation();
                             }}
                           >
-                            <Bell
+                            <ChevronDown
                               size={14}
                               className="text-gray-500 hover:text-white transition-colors"
                             />
@@ -308,9 +323,14 @@ const HomePage = ({
                 })}
               </div>
 
-              <button className="w-full mt-4 py-2 border border-white/10 text-gray-300 text-sm rounded hover:bg-white/5 transition-colors">
-                View Calendar
-              </button>
+              {visibleComingSoon < upcomingList.length && (
+                <button
+                  onClick={handleLoadMore}
+                  className="w-full mt-6 py-3 rounded-lg border border-white/10 text-gray-300 font-medium hover:bg-white/5 hover:text-white transition-colors"
+                >
+                  View more
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -322,10 +342,10 @@ const HomePage = ({
           <div className="w-6 h-6 bg-gradient-to-tr from-red-600 to-red-500 rounded flex items-center justify-center font-bold text-white text-xs">
             M
           </div>
-          <span className="font-bold text-white">MovieDeck</span>
+          <span className="font-bold text-white">MovieETL</span>
         </div>
         <p className="text-gray-600 text-xs">
-          © 2026 MovieDeck. All rights reserved.
+          © 2026 MovieETL. All rights reserved.
         </p>
       </footer>
     </div>

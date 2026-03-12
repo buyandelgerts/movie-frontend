@@ -1,4 +1,5 @@
 import {
+  ArrowLeft,
   ChevronRight,
   Heart,
   MapPin,
@@ -51,17 +52,6 @@ const DetailsPage = ({
 
   return (
     <div className="min-h-screen pt-16 animate-fade-in">
-      {/* Breadcrumb */}
-      <div className="bg-[#120a0a] px-6 py-3 flex items-center gap-2 text-xs text-gray-400">
-        <span className="hover:text-white cursor-pointer" onClick={onBack}>
-          Home
-        </span>
-        <ChevronRight size={12} />
-        <span className="hover:text-white cursor-pointer">Movies</span>
-        <ChevronRight size={12} />
-        <span className="text-white font-medium">{movie.title}</span>
-      </div>
-
       {/* Hero/Player - Youtube Trailer Banner */}
       <div className="relative w-full aspect-[21/9] md:aspect-[2.4/1] bg-black group overflow-hidden">
         {!isPlayingTrailer ? (
@@ -73,6 +63,12 @@ const DetailsPage = ({
             />
             <div className="absolute inset-0 bg-black/30 z-10" />
             <div className="absolute inset-0 flex items-center justify-center z-20">
+              <button
+                onClick={onBack}
+                className="absolute top-8 left-6 md:left-12 flex items-center gap-2 text-white hover:text-red-500 transition-colors z-20 bg-black/20 px-4 py-2 rounded-full backdrop-blur-md"
+              >
+                <ArrowLeft size={20} /> Back
+              </button>
               <div
                 onClick={() => setIsPlayingTrailer(true)}
                 className="w-20 h-20 bg-red-600/80 rounded-full flex items-center justify-center shadow-[0_0_40px_rgba(220,38,38,0.5)] cursor-pointer hover:scale-110 transition-transform backdrop-blur"
@@ -93,12 +89,18 @@ const DetailsPage = ({
               ></iframe>
             </div>
             <button
+              onClick={onBack}
+              className="absolute top-8 left-6 md:left-12 flex items-center gap-2 text-white hover:text-red-500 transition-colors z-20 bg-black/20 px-4 py-2 rounded-full backdrop-blur-md"
+            >
+              <ArrowLeft size={20} /> Back
+            </button>
+            {/* <button
               title="x"
               onClick={() => setIsPlayingTrailer(false)}
               className="absolute top-4 right-4 z-30 bg-black/60 hover:bg-black/80 text-white p-2 rounded-full transition-colors backdrop-blur"
             >
               <X size={24} />
-            </button>
+            </button> */}
           </>
         )}
         {/* Bottom Gradient */}
@@ -186,7 +188,7 @@ const DetailsPage = ({
                               {person.name}
                             </div>
                             <div className="text-gray-500 text-[10px] sm:text-xs text-center mt-1 line-clamp-1">
-                              {person.type}
+                              {person.job}
                             </div>
                           </div>
                         ))}
@@ -271,37 +273,32 @@ const DetailsPage = ({
               <div className="space-y-4 text-sm">
                 <div className="flex justify-between">
                   <span className="text-gray-500">Director</span>
-                  <span className="text-white">Denis Villeneuve</span>
+                  <span className="text-white">{movie.director}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-500">Writers</span>
-                  <span className="text-white text-right">
-                    Denis Villeneuve, Jon Spaihts
-                  </span>
+                  <span className="text-white text-right">{movie.writer}</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-gray-500">Genre</span>
                   <div className="flex gap-2">
                     <span className="bg-[#2a2020] text-gray-300 px-2 py-0.5 rounded text-xs border border-white/5">
-                      Sci-Fi
-                    </span>
-                    <span className="bg-[#2a2020] text-gray-300 px-2 py-0.5 rounded text-xs border border-white/5">
-                      Adventure
+                      {movie.genres}
                     </span>
                   </div>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-500">Release Date</span>
-                  <span className="text-white">March 1, 2024</span>
+                  <span className="text-white">{movie.release_date}</span>
                 </div>
-                <div className="flex justify-between">
+                {/* <div className="flex justify-between">
                   <span className="text-gray-500">Runtime</span>
                   <span className="text-white">2h 46m</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-500">Budget</span>
                   <span className="text-white">$190,000,000</span>
-                </div>
+                </div> */}
               </div>
             </div>
 

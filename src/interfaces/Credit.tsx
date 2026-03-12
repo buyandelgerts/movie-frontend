@@ -4,4 +4,6 @@ export interface Credit {
   type: string;
   popularity: number;
   profile_path: string;
+  job: string;
+  character: string;
 }

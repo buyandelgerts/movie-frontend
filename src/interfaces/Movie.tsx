@@ -13,6 +13,8 @@ export interface Movie {
   teaser_path: string;
   type: string;
   genres: string;
+  writer: string;
+  director: string;
   credits: Credit[];
   similar_movies: SimilarMovie[];
 }
