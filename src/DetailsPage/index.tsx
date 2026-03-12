@@ -6,7 +6,6 @@ import {
   Play,
   Share2,
   Star,
-  X,
 } from "lucide-react";
 import PaginatedGrid from "../PaginatedGrid";
 import { useEffect, useState } from "react";

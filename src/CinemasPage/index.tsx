@@ -5,8 +5,6 @@ import type { Movie } from "../interfaces/Movie";
 
 const CinemasPage = ({ movie }: { movie: Movie }) => {
   const [selectedTheater, setSelectedTheater] = useState<number>(1);
-  const activeTheater =
-    THEATERS.find((t) => t.id === selectedTheater) || THEATERS[0];
   const imgURL = import.meta.env.VITE_API_BASE_IMG_URL;
 
   return (

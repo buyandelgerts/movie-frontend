@@ -1,5 +1,4 @@
 import {
-  Bell,
   Calendar,
   ChevronDown,
   ChevronUp,
